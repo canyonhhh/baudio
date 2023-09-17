@@ -2,6 +2,7 @@
 import cgi
 import json
 import os
+import sys
 
 timestamp_file = "timestamp.txt"
 
@@ -17,8 +18,10 @@ def get_timestamp():
 
 if os.environ['REQUEST_METHOD'] == 'POST':
     content_length = int(os.environ['CONTENT_LENGTH'])
-    post_data = os.environ['wsgi.input'].read(content_length)
-    data = json.loads(post_data.decode("utf-8"))
+    post_data = sys.stdin.read(content_length)
+    # post_data = os.environ['wsgi.input'].read(content_length)
+    data = json.loads(post_data)
+    # data = json.loads(post_data.decode("utf-8"))
     save_timestamp(data['timestamp'])
     print("Content-type: text/plain\n")
     print("Timestamp saved.")
