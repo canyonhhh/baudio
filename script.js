@@ -14,11 +14,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	const progressBar = document.getElementById("progressBar");
 	const timeDisplay = document.getElementById("timeDisplay");
 
-	// Load timestamp from LocalStorage
-	const savedTime = localStorage.getItem("audioTime");
-	if (savedTime) {
-		audioPlayer.currentTime = savedTime;
-	}
+	// Fetch timestamp from server when website loads
+	fetch('/cgi-bin/timestamp.py')
+		.then(response => response.text())
+		.then(timestamp => {
+			audioPlayer.currentTime = parseFloat(timestamp);
+		});
 
 	playButton.addEventListener("click", function() {
 		audioPlayer.play();
@@ -26,6 +27,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	pauseButton.addEventListener("click", function() {
 		audioPlayer.pause();
+		const timestamp = audioPlayer.currentTime;
+
+		fetch('/cgi-bin/timestamp.py', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ timestamp })
+		});
 	});
 
 	rewindButton.addEventListener("click", function() {
